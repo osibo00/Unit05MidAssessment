@@ -52,8 +52,10 @@ public class RecyclerViewFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recycler_view);
 
         setRetrofit();
+        adapter = new RandomUserAdapter();
         getRandomUsers();
         recyclerView.setLayoutManager(new GridLayoutManager(rootView.getContext(), 2));
+        recyclerView.setAdapter(adapter);
 
         return rootView;
     }
@@ -71,11 +73,29 @@ public class RecyclerViewFragment extends Fragment {
                 if (response.isSuccessful()) {
                     RandomUsers randomUsers = response.body();
                     List<Results> resultsList = randomUsers.getResults();
+                    adapter.makeAdapterList(resultsList);
+                    Log.d("RecyclerFrag", "onResponse list size:  " + resultsList.size());
+                    Log.d("RecyclerFrag", "onResponse: " + response.raw());
+                }
+            }
 
-                    adapter = new RandomUserAdapter(resultsList);
-                    recyclerView.setAdapter(adapter);
-//                    adapter.clearList();
-//                    adapter.makeAdapterList(resultsList);
+            @Override
+            public void onFailure(Call<RandomUsers> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
+    }
+
+    private void getMoreRandomUsers() {
+        Call<RandomUsers> call = randomUserGetter.getRandomUsers();
+        call.enqueue(new Callback<RandomUsers>() {
+            @Override
+            public void onResponse(Call<RandomUsers> call, Response<RandomUsers> response) {
+                if (response.isSuccessful()) {
+                    RandomUsers randomUsers = response.body();
+                    List<Results> resultsList = randomUsers.getResults();
+                    adapter.clearList();
+                    adapter.updateList(resultsList);
                     Log.d("RecyclerFrag", "onResponse list size:  " + resultsList.size());
                     Log.d("RecyclerFrag", "onResponse: " + response.raw());
                 }
@@ -98,7 +118,7 @@ public class RecyclerViewFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action01:
-                getRandomUsers();
+                getMoreRandomUsers();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

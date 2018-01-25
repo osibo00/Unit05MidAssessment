@@ -21,15 +21,13 @@ public class RandomUserAdapter extends RecyclerView.Adapter<RandomUserViewHolder
 
     private List<Results> resultsList = new ArrayList<>();
 
-//    public RandomUserAdapter() {
-//        resultsList = new ArrayList<>();
-//        Log.d("Adapter", "RandomUserAdapter: ");
-//    }
-
-
-    public RandomUserAdapter(List<Results> resultsList) {
-        this.resultsList = resultsList;
+    public RandomUserAdapter() {
+        resultsList = new ArrayList<>();
     }
+
+//    public RandomUserAdapter(List<Results> resultsList) {
+//        this.resultsList = resultsList;
+//    }
 
     @Override
     public RandomUserViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -40,7 +38,6 @@ public class RandomUserAdapter extends RecyclerView.Adapter<RandomUserViewHolder
     @Override
     public void onBindViewHolder(RandomUserViewHolder holder, int position) {
         holder.onBind(resultsList.get(position));
-        Log.d("Adapter", "onBindViewHolder: Ran");
     }
 
     @Override
@@ -54,5 +51,11 @@ public class RandomUserAdapter extends RecyclerView.Adapter<RandomUserViewHolder
 
     public void makeAdapterList(List<Results> newList) {
         resultsList.addAll(newList);
+        notifyItemRangeInserted(getItemCount(), resultsList.size() - 1);
+    }
+
+    public void updateList(List<Results> newList) {
+        resultsList.addAll(newList);
+        notifyDataSetChanged();
     }
 }
